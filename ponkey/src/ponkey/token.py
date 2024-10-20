@@ -1,24 +1,41 @@
-import keyword
 from dataclasses import dataclass
 from enum import StrEnum
-from re import T
 
 
 class TokenType(StrEnum):
     ASSIGN = "="
+
     PLUS = "+"
+    MINUS = "-"
+    BANG = "!"
+    ASTERISK = "*"
+    SLASH = "/"
+    LT = "<"
+    GT = ">"
+    EQ = "=="
+    NEQ = "!="
+
     FUNCTION = "func"
     LET = "let"
+    TRUE = "true"
+    FALSE = "false"
+    IF = "if"
+    ELSE = "else"
+    RETURN = "return"
+
+    INT = "INT"
     LPAREN = "("
     RPAREN = ")"
     LBRACE = "{"
     RBRACE = "}"
+
     SEMICOLON = ";"
     COMMA = ","
-    ILLEGAL = "ILLEGAL"
-    EOF = ""
+
     IDENT = "IDENT"
-    INT = "INT"
+    EOF = ""
+
+    ILLEGAL = "ILLEGAL"
 
 
 @dataclass
@@ -32,6 +49,11 @@ class Token:
         keywords = {
             "func": TokenType.FUNCTION,
             "let": TokenType.LET,
+            "true": TokenType.TRUE,
+            "false": TokenType.FALSE,
+            "if": TokenType.IF,
+            "else": TokenType.ELSE,
+            "return": TokenType.RETURN,
         }
         if ident in keywords:
             return keywords[ident]
