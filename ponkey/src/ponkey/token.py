@@ -43,6 +43,9 @@ class Token:
     type: TokenType
     literal: str
 
+    def __repr__(self):
+        return f"Token ( type: {self.type}, literal: {self.literal} )"
+
     @staticmethod
     def lookup_table(ident: str) -> "TokenType":
         """ユーザー定義の識別子とキーワードを区別する"""
