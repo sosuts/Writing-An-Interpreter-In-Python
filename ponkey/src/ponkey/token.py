@@ -40,6 +40,15 @@ class TokenType(StrEnum):
 
 @dataclass
 class Token:
+    """
+    トークンは、字句解析器によって生成されたトークンを表す。
+    トークンは、トークンの種類とそのリテラル値を持つ。
+
+    Attributes:
+        type (TokenType): トークンの種類
+        literal (str): トークンのリテラル値
+    """
+
     type: TokenType
     literal: str
 

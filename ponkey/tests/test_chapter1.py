@@ -177,15 +177,16 @@ class TestLexerInit:
             Token(TokenType.EOF, ""),
         ]
         lexer = Lexer(input)
-        for i, expected_result in enumerate(expected_results):
+        for expected_result in expected_results:
             tok = lexer.next_token()
-            print(tok)
             assert tok == expected_result
 
     def test_empty_input(self):
         input = ""
+        expected_results = [
+            Token(TokenType.EOF, ""),
+        ]
         lexer = Lexer(input)
-        assert lexer.input == input
-        assert lexer.position == 0
-        assert lexer.read_position == 1
-        assert lexer.ch == ""
+        for expected_result in expected_results:
+            tok = lexer.next_token()
+            assert tok == expected_result
