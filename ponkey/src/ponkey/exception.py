@@ -4,4 +4,4 @@ class UnexpectedToken(Exception):
         self.got = got
 
     def __str__(self):
-        return f"expected next token to by {self.expected}, got {self.got} instead"
+        return f"expected next token to be {self.expected}, got {self.got} instead"

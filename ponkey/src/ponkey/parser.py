@@ -1,4 +1,4 @@
-from ponkey.ast import Identifier, LetStatement, Program, Statement
+from ponkey.ast import Identifier, LetStatement, Program, ReturnStatement, Statement
 from ponkey.exception import UnexpectedToken
 from ponkey.lexer import Lexer
 from ponkey.token import Token, TokenType
@@ -38,14 +38,21 @@ class Parser:
         self.peek_token = self.lexer.next_token()
 
     def parse_statement(self) -> Statement | None:
-        """statementをパースする"""
+        """statementをパースする.
+
+        self.current_tokenがparse_functionsに入っていたらその関数でパースする.
+        なければNoneを返す.
+        """
         if self.current_token is None:
             raise ValueError("current_token is None")
-        match self.current_token.type:
-            case TokenType.LET:
-                return self.parse_let_statement()
-            case _:
-                return None
+
+        parse_functions = {
+            TokenType.LET: self.parse_let_statement,
+            TokenType.RETURN: self.parse_return_statement,
+        }
+
+        parse_function = parse_functions.get(self.current_token.type, lambda: None)
+        return parse_function()
 
     def parse_let_statement(self) -> Statement | None:
         if self.current_token is None:
@@ -58,6 +65,14 @@ class Parser:
         )
         if not self.expect_peek(TokenType.ASSIGN):
             return None
+        while self.current_token.type != TokenType.SEMICOLON:
+            self.next_token()
+        return stmt
+
+    def parse_return_statement(self) -> Statement | None:
+        if self.current_token is None:
+            raise ValueError("current_token is None")
+        stmt = ReturnStatement(token=self.current_token)
         while self.current_token.type != TokenType.SEMICOLON:
             self.next_token()
         return stmt
@@ -83,6 +98,8 @@ class Parser:
             return False
 
     def peek_error(self, token_type: TokenType) -> None:
+        if self.peek_token is None:
+            raise ValueError("peek_token is None")
         self.errors.append(UnexpectedToken(token_type, self.peek_token.type))
 
     def parse_program(self) -> Program:

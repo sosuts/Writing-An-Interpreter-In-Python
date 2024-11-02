@@ -1,6 +1,6 @@
 from abc import ABCMeta, abstractmethod
 
-from ponkey.token import Token
+from ponkey.token import Token, TokenType
 
 
 class Node(metaclass=ABCMeta):
@@ -58,9 +58,34 @@ class LetStatement(Statement):
     """
 
     def __init__(self, token: Token) -> None:
+        if token.literal != TokenType.LET:
+            raise ValueError(f"token.literal is not TokenType.RETURN {TokenType.LET}")
         self.token = token
         self.name: Identifier | None = None
         self.value: Expression | None = None
+
+    def statement_node(self) -> None:
+        pass
+
+    def token_literal(self) -> str:
+        return self.token.literal
+
+
+class ReturnStatement(Statement):
+    """return文のASTノード
+
+    return <expression>;
+
+    ReturnStatementはreturnのトークンと式を保持する。
+    """
+
+    def __init__(self, token: Token) -> None:
+        if token.literal != TokenType.RETURN:
+            raise ValueError(
+                f"token.literal is not TokenType.RETURN {TokenType.RETURN}"
+            )
+        self.token = token
+        self.return_value: Expression | None = None
 
     def statement_node(self):
         pass

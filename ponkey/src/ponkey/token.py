@@ -58,16 +58,15 @@ class Token:
     @staticmethod
     def lookup_table(ident: str) -> "TokenType":
         """ユーザー定義の識別子とキーワードを区別する"""
-        keywords = {
-            "func": TokenType.FUNCTION,
-            "let": TokenType.LET,
-            "true": TokenType.TRUE,
-            "false": TokenType.FALSE,
-            "if": TokenType.IF,
-            "else": TokenType.ELSE,
-            "return": TokenType.RETURN,
-        }
-        if ident in keywords:
-            return keywords[ident]
-        else:
-            return TokenType.IDENT
+        return TokenKeywords.get(ident, TokenType.IDENT)
+
+
+TokenKeywords = {
+    "func": TokenType.FUNCTION,
+    "let": TokenType.LET,
+    "true": TokenType.TRUE,
+    "false": TokenType.FALSE,
+    "if": TokenType.IF,
+    "else": TokenType.ELSE,
+    "return": TokenType.RETURN,
+}
