@@ -14,7 +14,7 @@ def check_parser_errors(parser):
 
 class TestLetStatements:
     def _test_let_statement(self, statement, name) -> bool:
-        if statement.token_literal() != "let":
+        if statement.token_literal() != TokenType.LET:
             return False
         if statement.name.value != name:
             return False
