@@ -2,5 +2,7 @@
   "cSpell.words": ["Lexar", "ponkey"],
   "python.testing.pytestArgs": ["ponkey", "-s"],
   "python.testing.unittestEnabled": false,
-  "python.testing.pytestEnabled": true
+  "python.testing.pytestEnabled": true,
+  "mypy-type-checker.importStrategy": "fromEnvironment",
+  "mypy-type-checker.cwd": "${workspaceFolder}/ponkey",
 }

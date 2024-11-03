@@ -28,3 +28,9 @@ dev-dependencies = [
     "mypy>=1.13.0",
     "pre-commit>=4.0.1",
 ]
+
+[tool.mypy]
+python_version = "3.12"
+warn_return_any = true
+warn_unused_configs = true
+exclude = []
