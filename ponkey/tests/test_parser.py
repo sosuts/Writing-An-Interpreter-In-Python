@@ -73,3 +73,16 @@ class TestReturnStatement:
         check_parser_errors(parser)
         for i, _ in enumerate(expected_values):
             assert program.statements[i].token_literal() == TokenType.RETURN
+
+
+class TestIdentifierExpression:
+    def test_expression(self):
+        input_ = "foobar;"
+        expected_value = "foobar"
+
+        lexer = Lexer(input_)
+        parser = Parser(lexer)
+        program = parser.parse_program()
+        check_parser_errors(parser)
+        assert len(program.statements) == 1
+        assert program.statements[0].expression.value == expected_value

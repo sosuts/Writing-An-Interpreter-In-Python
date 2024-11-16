@@ -8,13 +8,18 @@ class Node(metaclass=ABCMeta):
 
     @abstractmethod
     def token_literal(self) -> str:
-        pass
+        raise NotImplementedError
+
+    @abstractmethod
+    def string(self) -> str:
+        raise NotImplementedError
 
 
 class Statement(Node):
     """文ノード
 
-    式と文をわけているのは、本来expressionを使うところでstatementを使ったときにエラーを教えてくれるようにできるかもしれないから
+    式と文をわけているのは、本来expressionを使うところでstatementを使ったときに
+    エラーを教えてくれるようにできるかもしれないから
     """
 
     @abstractmethod
@@ -33,7 +38,7 @@ class Expression(Node):
         pass
 
 
-class Program:
+class Program(Node):
     """全てのASTのルート"""
 
     def __init__(self, statements: list[Statement] | None = None) -> None:
@@ -48,6 +53,24 @@ class Program:
         else:
             return ""
 
+    def string(self) -> str:
+        return "".join([stmt.string() for stmt in self.statements])
+
+
+class Identifier(Expression):
+    def __init__(self, token: Token, value: str) -> None:
+        self.token = token
+        self.value = value
+
+    def expression_node(self):
+        pass
+
+    def token_literal(self) -> str:
+        return self.token.literal
+
+    def string(self) -> str:
+        return self.value
+
 
 class LetStatement(Statement):
     """let文のASTノード
@@ -57,18 +80,32 @@ class LetStatement(Statement):
     LetStatementはnameとvalueを持つ。nameは子の束縛の識別を保持する。valueは式を保持する。
     """
 
-    def __init__(self, token: Token) -> None:
+    def __init__(
+        self,
+        token: Token,
+        name: Identifier | None = None,
+        value: Expression | None = None,
+    ) -> None:
         if token.literal != TokenType.LET:
-            raise ValueError(f"token.literal is not TokenType.RETURN {TokenType.LET}")
+            raise ValueError(f"token.literal is not TokenType.LET {TokenType.LET}")
         self.token = token
-        self.name: Identifier | None = None
-        self.value: Expression | None = None
+        self.name = name
+        self.value = value
 
     def statement_node(self) -> None:
         pass
 
     def token_literal(self) -> str:
         return self.token.literal
+
+    def string(self) -> str:
+        if self.name is None:
+            raise ValueError("self.name is None")
+        out = f"{self.token_literal()} {self.name.string()} = "
+        if self.value:
+            out += self.value.string()
+        out += ";"
+        return out
 
 
 class ReturnStatement(Statement):
@@ -93,14 +130,26 @@ class ReturnStatement(Statement):
     def token_literal(self) -> str:
         return self.token.literal
 
+    def string(self) -> str:
+        out = f"{self.token_literal()}"
+        if self.return_value:
+            out += self.return_value.string()
+        out += ";"
+        return out
 
-class Identifier:
-    def __init__(self, token: Token, value: str) -> None:
+
+class ExpressionStatement(Statement):
+    def __init__(self, token: Token, expression: Expression) -> None:
         self.token = token
-        self.value = value
+        self.expression = expression
 
     def expression_node(self):
         pass
 
     def token_literal(self) -> str:
         return self.token.literal
+
+    def string(self) -> str:
+        if not self.expression:
+            return ""
+        return self.expression.string()

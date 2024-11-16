@@ -1,11 +1,23 @@
-from ponkey.ast import Identifier, LetStatement, Program, ReturnStatement, Statement
+from typing import Callable
+
+from ponkey.ast import (
+    Expression,
+    Identifier,
+    LetStatement,
+    Program,
+    ReturnStatement,
+    Statement,
+)
 from ponkey.exception import UnexpectedToken
 from ponkey.lexer import Lexer
 from ponkey.token import Token, TokenType
 
+PrefixParseFn = Callable[[], Expression]
+InfixParseFn = Callable[[Expression], Expression]
+
 
 class Parser:
-    """Lexerがtokenizeした結果をもとにASTを生成するクラス"""
+    """Lexerがtokenizeした結果をもとにASTを生成する"""
 
     def __init__(self, lexer: Lexer) -> None:
         """
@@ -23,10 +35,16 @@ class Parser:
             lexer (Lexer): The lexer instance used to tokenize the input.
         """
         self.lexer = lexer
+        self.errors: list[UnexpectedToken] = []
         self.current_token: Token | None = None
         self.peek_token: Token | None = None
-        self.errors: list[UnexpectedToken] = []
 
+        self.prefix_parse_functions: dict[TokenType, PrefixParseFn] = {}
+        self.infix_parse_functions: dict[TokenType, InfixParseFn] = {}
+        self.init_tokens()
+
+    def init_tokens(self) -> None:
+        """current_tokenとpeek_tokenを初期化する"""
         # self.current_token = None, self.peek_token = 1つ目のトークン
         self.next_token()
         # self.current_token = 1つ目のトークン, self.peek_token = 2つ目のトークン
@@ -116,3 +134,9 @@ class Parser:
                 program.statements.append(stmt)
             self.next_token()
         return program
+
+    def register_prefix(self, token_type: TokenType, fn: PrefixParseFn) -> None:
+        self.prefix_parse_functions[token_type] = fn
+
+    def register_infix(self, token_type: TokenType, fn: InfixParseFn) -> None:
+        self.infix_parse_functions[token_type] = fn

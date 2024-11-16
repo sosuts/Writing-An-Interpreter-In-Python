@@ -3,6 +3,8 @@ from enum import StrEnum
 
 
 class TokenType(StrEnum):
+    """トークンの種類を表す列挙型.予約語も含まれる."""
+
     ASSIGN = "="
 
     PLUS = "+"
@@ -56,12 +58,14 @@ class Token:
         return f"Token ( type: {self.type}, literal: {self.literal} )"
 
     @staticmethod
-    def lookup_table(ident: str) -> "TokenType":
-        """ユーザー定義の識別子とキーワードを区別する"""
-        return TokenKeywords.get(ident, TokenType.IDENT)
+    def lookup_table(literal: str) -> "TokenType":
+        """リテラルが予約語だったら対応するトークンを返し、
+        そうでなければユーザー定義のトークンと判断しIDENTを返す.
+        """
+        return PreservedKeywords.get(literal, TokenType.IDENT)
 
 
-TokenKeywords = {
+PreservedKeywords = {
     "func": TokenType.FUNCTION,
     "let": TokenType.LET,
     "true": TokenType.TRUE,
