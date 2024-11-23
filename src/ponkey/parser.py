@@ -9,32 +9,32 @@ from ponkey.ast import (
     Statement,
 )
 from ponkey.exception import UnexpectedToken
-from ponkey.lexer import Lexer
 from ponkey.token import Token, TokenType
+from ponkey.tokenizer import Tokenizer
 
 PrefixParseFn = Callable[[], Expression]
 InfixParseFn = Callable[[Expression], Expression]
 
 
 class Parser:
-    """Lexerがtokenizeした結果をもとにASTを生成する"""
+    """Tokenizerがtokenizeした結果をもとにASTを生成する"""
 
-    def __init__(self, lexer: Lexer) -> None:
+    def __init__(self, tokenizer: Tokenizer) -> None:
         """
-        Initializes the Parser with a given Lexer instance.
+        Initializes the Parser with a given Tokenizer instance.
         next_tokenメソッドを2回実行する理由は、パーサーが現在のトークン(current_token)と
         次のトークン(peek_token)の両方を保持するため。
         これにより、パーサーは次に何が来るかを確認しながら現在のトークンを処理できる。これを先読みと呼ぶ。
 
         Args:
-            lexer (Lexer): The lexer instance used to tokenize the input.
+            tokenizer (Tokenizer): The tokenizer instance used to tokenize the input.
 
         Attributes:
             current_token (Token | None): The current token being processed.
             peek_token (Token | None): The next token to be processed.
-            lexer (Lexer): The lexer instance used to tokenize the input.
+            tokenizer (Tokenizer): The tokenizer instance used to tokenize the input.
         """
-        self.lexer = lexer
+        self.tokenizer = tokenizer
         self.errors: list[UnexpectedToken] = []
         self.current_token: Token | None = None
         self.peek_token: Token | None = None
@@ -53,7 +53,7 @@ class Parser:
     def next_token(self):
         """current_tokenとpeek_tokenを1つずつ進める"""
         self.current_token = self.peek_token
-        self.peek_token = self.lexer.next_token()
+        self.peek_token = self.tokenizer.next_token()
 
     def parse_statement(self) -> Statement | None:
         """statementをパースする.

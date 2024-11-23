@@ -1,6 +1,6 @@
-from ponkey.lexer import Lexer
 from ponkey.parser import Parser
 from ponkey.token import TokenType
+from ponkey.tokenizer import Tokenizer
 
 
 def check_parser_errors(parser):
@@ -30,8 +30,8 @@ class TestLetStatements:
         """
         expected_identifiers = ["x", "y", "foobar"]
 
-        lexer = Lexer(input_)
-        parser = Parser(lexer)
+        tokenizer = Tokenizer(input_)
+        parser = Parser(tokenizer)
         program = parser.parse_program()
         assert check_parser_errors(parser) is None
         for i, expected_identifier in enumerate(expected_identifiers):
@@ -50,8 +50,8 @@ class TestLetStatements:
             "parser error: expected next token to be IDENT, got INT instead\n"
         )
 
-        lexer = Lexer(input_)
-        parser = Parser(lexer)
+        tokenizer = Tokenizer(input_)
+        parser = Parser(tokenizer)
         parser.parse_program()
         check_parser_errors(parser)
         captured = capsys.readouterr()
@@ -67,8 +67,8 @@ class TestReturnStatement:
         """
         expected_values = [5, 10, 838838]
 
-        lexer = Lexer(input_)
-        parser = Parser(lexer)
+        tokenizer = Tokenizer(input_)
+        parser = Parser(tokenizer)
         program = parser.parse_program()
         check_parser_errors(parser)
         for i, _ in enumerate(expected_values):
@@ -80,8 +80,8 @@ class TestIdentifierExpression:
         input_ = "foobar;"
         expected_value = "foobar"
 
-        lexer = Lexer(input_)
-        parser = Parser(lexer)
+        tokenizer = Tokenizer(input_)
+        parser = Parser(tokenizer)
         program = parser.parse_program()
         check_parser_errors(parser)
         assert len(program.statements) == 1

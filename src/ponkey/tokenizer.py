@@ -1,7 +1,7 @@
 from ponkey.token import Token, TokenType
 
 
-class Lexer:
+class Tokenizer:
     """Ponkey言語の字句解析器.
 
     文字列をトークンに分割する.
@@ -49,7 +49,7 @@ class Lexer:
         self.read_position = self.position + 1
 
     def skip_whitespace(self) -> None:
-        """Lexer.WHITESPACESに定義された空文字をスキップする"""
+        """Tokenizer.WHITESPACESに定義された空文字をスキップする"""
         while self.ch in self.WHITESPACES:
             self.to_next_char()
 

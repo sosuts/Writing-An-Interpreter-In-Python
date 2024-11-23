@@ -1,10 +1,10 @@
 import pytest
 
-from ponkey.lexer import Lexer
 from ponkey.token import Token, TokenType
+from ponkey.tokenizer import Tokenizer
 
 
-class TestLexerInit:
+class TestTokenizerInit:
     def test_next_token1(self):
         input = "=+(){},;"
         expected_results = [
@@ -19,13 +19,13 @@ class TestLexerInit:
             Token(TokenType.EOF, ""),
         ]
 
-        lexer = Lexer(input)
-        assert lexer.input == input
-        assert lexer.position == 0
-        assert lexer.read_position == 1
-        assert lexer.ch == "="
+        tokenizer = Tokenizer(input)
+        assert tokenizer.input == input
+        assert tokenizer.position == 0
+        assert tokenizer.read_position == 1
+        assert tokenizer.ch == "="
         for i, expected_result in enumerate(expected_results):
-            tok = lexer.next_token()
+            tok = tokenizer.next_token()
             assert tok == expected_result
 
     def test_next_token2(self):
@@ -75,13 +75,13 @@ class TestLexerInit:
             Token(TokenType.SEMICOLON, ";"),
             Token(TokenType.EOF, ""),
         ]
-        lexer = Lexer(input)
+        tokenizer = Tokenizer(input)
         for i, expected_result in enumerate(expected_results):
-            tok = lexer.next_token()
+            tok = tokenizer.next_token()
             assert tok == expected_result
 
     def test_next_token3(self):
-        """Test for 1.4 - Extending our Token Set and Lexer"""
+        """Test for 1.4 - Extending our Token Set and Tokenizer"""
         input = """let five = 5;
         let ten = 10;
         let add = func(x, y) {
@@ -176,9 +176,9 @@ class TestLexerInit:
             Token(TokenType.SEMICOLON, ";"),
             Token(TokenType.EOF, ""),
         ]
-        lexer = Lexer(input)
+        tokenizer = Tokenizer(input)
         for expected_result in expected_results:
-            tok = lexer.next_token()
+            tok = tokenizer.next_token()
             assert tok == expected_result
 
     def test_empty_input(self):
@@ -186,7 +186,7 @@ class TestLexerInit:
         expected_results = [
             Token(TokenType.EOF, ""),
         ]
-        lexer = Lexer(input)
+        tokenizer = Tokenizer(input)
         for expected_result in expected_results:
-            tok = lexer.next_token()
+            tok = tokenizer.next_token()
             assert tok == expected_result

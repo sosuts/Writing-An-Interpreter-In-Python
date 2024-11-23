@@ -1,7 +1,7 @@
 from rich import pretty
 
-from ponkey.lexer import Lexer
 from ponkey.token import Token, TokenType
+from ponkey.tokenizer import Tokenizer
 
 
 class REPL:
@@ -15,9 +15,9 @@ class REPL:
         while True:
             print(self.PREFIX, end="")
             line = input()
-            lexer = Lexer(line)
+            tokenizer = Tokenizer(line)
             while True:
-                token = lexer.next_token()
+                token = tokenizer.next_token()
                 if token.type == TokenType.EOF:
                     break
                 print(token)
