@@ -5,7 +5,7 @@ from ponkey.token import Token, TokenType
 
 
 class TestLexerInit:
-    def taest_next_token1(self):
+    def test_next_token1(self):
         input = "=+(){},;"
         expected_results = [
             Token(TokenType.ASSIGN, "="),
