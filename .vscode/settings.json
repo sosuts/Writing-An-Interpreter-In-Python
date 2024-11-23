@@ -1,8 +1,10 @@
 {
   "cSpell.words": ["Lexar", "ponkey"],
-  "python.testing.pytestArgs": ["ponkey", "-s"],
+  "python.testing.pytestArgs": ["-s"],
   "python.testing.unittestEnabled": false,
   "python.testing.pytestEnabled": true,
   "mypy-type-checker.importStrategy": "fromEnvironment",
-  "mypy-type-checker.cwd": "${workspaceFolder}/ponkey",
+  "mypy-type-checker.cwd": "${workspaceFolder}",
+  "mypy-type-checker.args": ["{workspaceFolder}/pyproject.toml"],
+  "ruff.configuration": "{workspaceFolder}/pyproject.toml"
 }
