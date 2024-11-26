@@ -1,10 +1,10 @@
 {
-  "cSpell.words": ["Lexar", "ponkey"],
-  "python.testing.pytestArgs": ["-s"],
+  "cSpell.words": ["LESSGREATER", "Lexar", "ponkey"],
+  "python.testing.pytestArgs": [".", "--capture=no"],
   "python.testing.unittestEnabled": false,
   "python.testing.pytestEnabled": true,
   "mypy-type-checker.importStrategy": "fromEnvironment",
   "mypy-type-checker.cwd": "${workspaceFolder}",
-  "mypy-type-checker.args": ["{workspaceFolder}/pyproject.toml"],
+  "mypy-type-checker.args": ["--config-file", "pyproject.toml"],
   "ruff.configuration": "{workspaceFolder}/pyproject.toml"
 }
