@@ -1,5 +1,4 @@
 from dataclasses import dataclass, field
-from typing import Literal
 
 from ponkey.token import Token, TokenType
 
@@ -96,7 +95,7 @@ class Tokenizer:
                 # 次の文字をpeekして、== か = かを判定する
                 if self.peak_char() == "=":
                     # 次の文字が = の場合、== としてトークンを生成する
-                    ch: str = self.ch  # type: ignore[no-redef]
+                    ch: str = self.ch
                     # 次の文字に進める
                     self.read_char()
                     literal = ch + self.ch
