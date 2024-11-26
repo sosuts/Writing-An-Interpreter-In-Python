@@ -1,6 +1,10 @@
+from dataclasses import dataclass, field
+from typing import Literal
+
 from ponkey.token import Token, TokenType
 
 
+@dataclass
 class Tokenizer:
     """Ponkey言語の字句解析器.
 
@@ -13,17 +17,16 @@ class Tokenizer:
         ch (str): 現在の文字
     """
 
-    WHITESPACES = [" ", "\t", "\n", "\r"]
+    input: str
+    position: int = 0
+    read_position: int = 0
+    ch: str = field(init=False)
 
-    def __init__(self, input: str) -> None:
-        self.input: str = input
-        self.position: int = -1
-        self.read_position: int = self.position + 1
-        self.ch: str = ""
-        self.to_next_char()
+    def __post_init__(self) -> None:
+        self.read_char()
 
     @staticmethod
-    def is_letter(ch: str) -> bool:
+    def _is_letter(ch: str) -> bool:
         """文字が英字かアンダースコアかどうかを判定する
 
         Args:
@@ -32,14 +35,18 @@ class Tokenizer:
         return ("a" <= ch <= "z") | ("A" <= ch <= "Z") | (ch == "_")
 
     @staticmethod
-    def is_number(ch: str) -> bool:
+    def _is_number(ch: str) -> bool:
         """chが数字かどうかを判定する"""
         return "0" <= ch <= "9"
 
-    def to_next_char(self) -> None:
-        """self.positionとself.read_positionを次の文字に進める.
+    def read_char(self) -> None:
+        """
+        現在の読み取り位置から1文字を読み込み、`self.ch`に設定します。
+        読み取り位置が入力の長さを超えている場合、`self.ch`は空文字列になります。
+        その後、`self.position`を現在の読み取り位置に更新し、`self.read_position`を1つ進めます。
 
-        もし、読み込む文字がない場合は、self.chに空文字を代入する
+        Returns:
+            None
         """
         if self.read_position >= len(self.input):
             self.ch = ""
@@ -48,23 +55,27 @@ class Tokenizer:
         self.position = self.read_position
         self.read_position = self.position + 1
 
-    def skip_whitespace(self) -> None:
+    @property
+    def WHITESPACES(self) -> list[str]:
+        return [" ", "\t", "\n", "\r"]
+
+    def _skip_whitespace(self) -> None:
         """Tokenizer.WHITESPACESに定義された空文字をスキップする"""
         while self.ch in self.WHITESPACES:
-            self.to_next_char()
+            self.read_char()
 
     def read_number(self) -> str:
         """Read until the next non-number character"""
         start_position = self.position
-        while self.is_number(self.ch):
-            self.to_next_char()
+        while self._is_number(self.ch):
+            self.read_char()
         return self.input[start_position : self.position]
 
     def read_identifier(self) -> str:
         """Read until the next non-letter character"""
         start_position = self.position
-        while self.is_letter(self.ch):
-            self.to_next_char()
+        while self._is_letter(self.ch):
+            self.read_char()
         return self.input[start_position : self.position]
 
     def next_token(self) -> Token:
@@ -78,7 +89,7 @@ class Tokenizer:
             5. それ以外の場合、ILLEGALトークンを返す
         """
         # 空白をスキップ
-        self.skip_whitespace()
+        self._skip_whitespace()
         # 現在の文字が特定の文字の場合、その文字に対応するトークンを返す
         match self.ch:
             case "=":
@@ -87,7 +98,7 @@ class Tokenizer:
                     # 次の文字が = の場合、== としてトークンを生成する
                     ch: str = self.ch  # type: ignore[no-redef]
                     # 次の文字に進める
-                    self.to_next_char()
+                    self.read_char()
                     literal = ch + self.ch
                     tok = Token(TokenType.EQ, literal)
                 else:
@@ -102,7 +113,7 @@ class Tokenizer:
                 if self.peak_char() == "=":
                     # 次の文字が = の場合、!= としてトークンを生成する
                     ch: str = self.ch  # type: ignore[no-redef]
-                    self.to_next_char()
+                    self.read_char()
                     literal = ch + self.ch
                     tok = Token(TokenType.NEQ, literal)
                 else:
@@ -132,7 +143,7 @@ class Tokenizer:
             # 現在の文字が英字の場合、識別子を読み取り、その識別子に対応するトークンを返す
             case _:
                 # 英字の場合、識別子を読み取る
-                if self.is_letter(self.ch):
+                if self._is_letter(self.ch):
                     literal = self.read_identifier()
                     # 識別子に対応するトークンを返す
                     tok = Token(
@@ -140,13 +151,13 @@ class Tokenizer:
                         literal,
                     )
                     return tok
-                elif self.is_number(self.ch):
+                elif self._is_number(self.ch):
                     literal = self.read_number()
                     tok = Token(TokenType.INT, literal)
                     return tok
                 else:
                     tok = Token(TokenType.ILLEGAL, self.ch)
-        self.to_next_char()
+        self.read_char()
         return tok
 
     def peak_char(self) -> str:

@@ -54,7 +54,7 @@ class Token:
     type: TokenType
     literal: str
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return f"Token ( type: {self.type}, literal: {self.literal} )"
 
     @staticmethod

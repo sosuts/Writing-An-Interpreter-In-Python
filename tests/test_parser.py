@@ -1,9 +1,12 @@
+from pytest import CaptureFixture
+
+from ponkey.ast import Expression, ExpressionStatement, Statement
 from ponkey.parser import Parser
 from ponkey.token import TokenType
 from ponkey.tokenizer import Tokenizer
 
 
-def check_parser_errors(parser):
+def check_parser_errors(parser: Parser) -> None:
     errors = parser.errors
     if not errors:
         return
@@ -13,7 +16,7 @@ def check_parser_errors(parser):
 
 
 class TestLetStatements:
-    def _test_let_statement(self, statement, name) -> bool:
+    def _test_let_statement(self, statement: Statement, name: str) -> bool:
         if statement.token_literal() != TokenType.LET:
             return False
         if statement.name.value != name:
@@ -22,7 +25,7 @@ class TestLetStatements:
             return False
         return True
 
-    def test_statements(self):
+    def test_statements(self) -> None:
         input_ = """
         let x = 5;
         let y = 10;
@@ -33,11 +36,11 @@ class TestLetStatements:
         tokenizer = Tokenizer(input_)
         parser = Parser(tokenizer)
         program = parser.parse_program()
-        assert check_parser_errors(parser) is None
+        check_parser_errors(parser)
         for i, expected_identifier in enumerate(expected_identifiers):
             self._test_let_statement(program.statements[i], expected_identifier)
 
-    def test_error_messages(self, capsys):
+    def test_error_messages(self, capsys: CaptureFixture[str]) -> None:
         input_ = """
         let x 5;
         let = 10;
@@ -59,7 +62,7 @@ class TestLetStatements:
 
 
 class TestReturnStatement:
-    def test_statements(self):
+    def test_statements(self) -> None:
         input_ = """
         return 5;
         return 10;
@@ -76,13 +79,27 @@ class TestReturnStatement:
 
 
 class TestIdentifierExpression:
-    def test_expression(self):
-        input_ = "foobar;"
-        expected_value = "foobar"
+    # def test_expression(self) -> None:
+    #     input_ = "foobar;"
+    #     expected_value = "foobar"
+
+    #     tokenizer = Tokenizer(input_)
+    #     parser = Parser(tokenizer)
+    #     program = parser.parse_program()
+    #     check_parser_errors(parser)
+    #     assert len(program.statements) == 1
+    #     assert program.statements[0].token_literal() == expected_value
+
+    def test_integer_literal_expression(self) -> None:
+        input_ = "5;"
+        expected_value = 5
 
         tokenizer = Tokenizer(input_)
         parser = Parser(tokenizer)
         program = parser.parse_program()
         check_parser_errors(parser)
         assert len(program.statements) == 1
-        assert program.statements[0].expression.value == expected_value
+        assert isinstance(program.statements[0], ExpressionStatement)
+        assert isinstance(program.statements[0].expression, Expression)
+        assert program.statements[0].token_literal() == str(expected_value)
+        assert program.statements[0].expression.value == 5

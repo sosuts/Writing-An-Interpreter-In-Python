@@ -208,3 +208,20 @@ class ExpressionStatement(Statement):
         if not self.expression:
             return ""
         return self.expression.string()
+
+
+class IntegerLiteral(Expression):
+    def __init__(self, token: Token, value: int | None) -> None:
+        if token.type != TokenType.INT:
+            raise ValueError(f"token.type is not TokenType.INT {TokenType.INT}")
+        self.token = token
+        self.value = value
+
+    def expression_node(self) -> None:
+        raise NotImplementedError
+
+    def token_literal(self) -> str:
+        return self.token.literal
+
+    def string(self) -> str:
+        return self.token.literal
