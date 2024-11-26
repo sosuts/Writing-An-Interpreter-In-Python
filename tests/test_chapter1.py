@@ -1,5 +1,3 @@
-import pytest
-
 from ponkey.token import Token, TokenType
 from ponkey.tokenizer import Tokenizer
 
@@ -19,7 +17,7 @@ class TestTokenizerInit:
             Token(TokenType.EOF, ""),
         ]
 
-        tokenizer = Tokenizer(input)
+        tokenizer = Tokenizer(input=input)
         assert tokenizer.input == input
         assert tokenizer.position == 0
         assert tokenizer.read_position == 1
@@ -75,7 +73,7 @@ class TestTokenizerInit:
             Token(TokenType.SEMICOLON, ";"),
             Token(TokenType.EOF, ""),
         ]
-        tokenizer = Tokenizer(input)
+        tokenizer = Tokenizer(input=input)
         for i, expected_result in enumerate(expected_results):
             tok = tokenizer.next_token()
             assert tok == expected_result
@@ -186,7 +184,7 @@ class TestTokenizerInit:
         expected_results = [
             Token(TokenType.EOF, ""),
         ]
-        tokenizer = Tokenizer(input)
+        tokenizer = Tokenizer(input=input)
         for expected_result in expected_results:
             tok = tokenizer.next_token()
             assert tok == expected_result
