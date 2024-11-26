@@ -18,8 +18,6 @@ jobs:
 
       - name: Install the project
         run: uv sync --all-extras --dev
-        working-directory: ./ponkey
 
       - name: Run tests
         run: uv run pytest tests
-        working-directory: ./ponkey
