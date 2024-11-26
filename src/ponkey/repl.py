@@ -1,6 +1,6 @@
 from rich import pretty
 
-from ponkey.token import Token, TokenType
+from ponkey.token import TokenType
 from ponkey.tokenizer import Tokenizer
 
 
