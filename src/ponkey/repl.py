@@ -11,7 +11,7 @@ class REPL:
     def __init__(self) -> None:
         pass
 
-    def start(self):
+    def start(self) -> None:
         while True:
             print(self.PREFIX, end="")
             line = input()

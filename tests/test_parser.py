@@ -1,6 +1,6 @@
 from pytest import CaptureFixture
 
-from ponkey.ast import Expression, ExpressionStatement, Statement
+from ponkey.ast import Expression, ExpressionStatement, LetStatement, Statement
 from ponkey.parser import Parser
 from ponkey.token import TokenType
 from ponkey.tokenizer import Tokenizer
@@ -16,7 +16,7 @@ def check_parser_errors(parser: Parser) -> None:
 
 
 class TestLetStatements:
-    def _test_let_statement(self, statement: Statement, name: str) -> bool:
+    def _test_let_statement(self, statement: LetStatement, name: str) -> bool:
         if statement.token_literal() != TokenType.LET:
             return False
         if statement.name.value != name:
@@ -79,16 +79,16 @@ class TestReturnStatement:
 
 
 class TestIdentifierExpression:
-    # def test_expression(self) -> None:
-    #     input_ = "foobar;"
-    #     expected_value = "foobar"
+    def test_expression(self) -> None:
+        input_ = "foobar;"
+        expected_value = "foobar"
 
-    #     tokenizer = Tokenizer(input_)
-    #     parser = Parser(tokenizer)
-    #     program = parser.parse_program()
-    #     check_parser_errors(parser)
-    #     assert len(program.statements) == 1
-    #     assert program.statements[0].token_literal() == expected_value
+        tokenizer = Tokenizer(input_)
+        parser = Parser(tokenizer)
+        program = parser.parse_program()
+        check_parser_errors(parser)
+        assert len(program.statements) == 1
+        assert program.statements[0].token_literal() == expected_value
 
     def test_integer_literal_expression(self) -> None:
         input_ = "5;"
