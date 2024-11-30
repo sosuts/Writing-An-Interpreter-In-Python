@@ -11,7 +11,6 @@ from ponkey.ast import (
     ReturnStatement,
     Statement,
 )
-from ponkey.exception import UnexpectedToken
 from ponkey.token import Token, TokenType
 from ponkey.tokenizer import Tokenizer
 
@@ -49,7 +48,7 @@ class Parser:
             tokenizer (Tokenizer): The tokenizer instance used to tokenize the input.
         """
         self.tokenizer = tokenizer
-        self.errors: list[UnexpectedToken] = []
+        self.errors: list[str] = []
         self.current_token: Token | None = None
         self.peek_token: Token | None = None
 
@@ -177,9 +176,7 @@ class Parser:
             lit.value = int(self.current_token.literal)
         except ValueError:
             self.errors.append(
-                UnexpectedToken(
-                    f"could not parse {self.current_token.literal} as integer"
-                )
+                f"could not parse {self.current_token.literal} as integer"
             )
         return lit
 
@@ -206,7 +203,9 @@ class Parser:
     def peek_error(self, token_type: TokenType) -> None:
         if self.peek_token is None:
             raise ValueError("peek_token is None")
-        self.errors.append(UnexpectedToken(token_type, self.peek_token.type))
+        self.errors.append(
+            f"expected next token to be {token_type}, got {self.peek_token.type} instead"
+        )
 
     def _is_end_of_statement(self) -> bool:
         """
