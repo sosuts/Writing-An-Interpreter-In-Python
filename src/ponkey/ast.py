@@ -202,6 +202,8 @@ class ExpressionStatement(Statement):
         raise NotImplementedError
 
     def token_literal(self) -> str:
+        if not self.token:
+            return ""
         return self.token.literal
 
     def string(self) -> str:
@@ -211,7 +213,7 @@ class ExpressionStatement(Statement):
 
 
 class IntegerLiteral(Expression):
-    def __init__(self, token: Token, value: int | None) -> None:
+    def __init__(self, token: Token, value: int | None = None) -> None:
         if token.type != TokenType.INT:
             raise ValueError(f"token.type is not TokenType.INT {TokenType.INT}")
         self.token = token

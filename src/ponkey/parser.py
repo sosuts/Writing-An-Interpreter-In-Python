@@ -171,7 +171,7 @@ class Parser:
     def parse_integer_literal(self) -> Expression:
         if self.current_token is None:
             raise ValueError("current_token is None")
-        lit = IntegerLiteral(token=self.current_token, value=None)
+        lit = IntegerLiteral(token=self.current_token)
         try:
             lit.value = int(self.current_token.literal)
         except ValueError:
