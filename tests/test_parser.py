@@ -74,6 +74,7 @@ class TestReturnStatement:
         parser = Parser(tokenizer)
         program = parser.parse_program()
         check_parser_errors(parser)
+        assert len(program.statements) == len(expected_values)
         for i, _ in enumerate(expected_values):
             assert program.statements[i].token_literal() == TokenType.RETURN
 

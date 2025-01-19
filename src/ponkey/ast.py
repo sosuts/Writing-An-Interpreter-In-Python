@@ -74,7 +74,7 @@ class Program(Node):
             self.statements = statements
 
     def token_literal(self) -> str:
-        """最初の文のトークンリテラルを返すｒ
+        """最初の文のトークンリテラルを返す
 
         Returns:
             str: self.statementsが空でない場合は、最初の文のトークンリテラルを返す。
@@ -191,7 +191,18 @@ class ReturnStatement(Statement):
 
 
 class ExpressionStatement(Statement):
-    def __init__(self, token: Token | None, expression: Expression | None) -> None:
+    """式文のASTノード
+
+    式文はx+10;のような式だけの文を表す。
+
+    Attributes:
+        token (Token): 式文の最初のトークン
+        expression (Expression | None): 式文の式
+    """
+
+    def __init__(
+        self, token: Token | None, expression: Expression | None = None
+    ) -> None:
         self.token = token
         self.expression = expression
 

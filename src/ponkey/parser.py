@@ -1,4 +1,4 @@
-from enum import IntEnum
+from enum import IntEnum, auto
 from typing import Callable
 
 from ponkey.ast import (
@@ -18,16 +18,16 @@ PrefixParseFn = Callable[[], Expression]
 InfixParseFn = Callable[[Expression], Expression]
 
 
-class Precedence(IntEnum):
+class Priority(IntEnum):
     """式の優先順位を表す"""
 
-    LOWEST = 1
-    EQUALS = 2  # ==
-    LESSGREATER = 3  # > または <
-    SUM = 4  # +
-    PRODUCT = 5  # *
-    PREFIX = 6  # -X または !X
-    CALL = 7  # mu_function(X)
+    LOWEST = auto()
+    EQUALS = auto()  # ==
+    LESSGREATER = auto()  # > または <
+    SUM = auto()  # +
+    PRODUCT = auto()  # *
+    PREFIX = auto()  # -X または !X
+    CALL = auto()  # mu_function(X)
 
 
 class Parser:
@@ -145,7 +145,7 @@ class Parser:
             self.next_token()
         return stmt
 
-    def parse_expression(self, precedence: Precedence) -> Expression | None:
+    def parse_expression(self, priority: Priority) -> Expression | None:
         if self.current_token is None:
             raise ValueError("current_token is None")
         prefix = self.prefix_parse_functions.get(self.current_token.type)
@@ -155,8 +155,10 @@ class Parser:
         return left_expression
 
     def parse_expression_statement(self) -> ExpressionStatement | None:
-        stmt = ExpressionStatement(token=self.current_token, expression=None)
-        expression = self.parse_expression(Precedence.LOWEST)
+        stmt = ExpressionStatement(
+            token=self.current_token,
+        )
+        expression = self.parse_expression(Priority.LOWEST)
         if expression is not None:
             stmt.expression = expression
         if self.peek_token_is(TokenType.SEMICOLON):

@@ -1,4 +1,9 @@
+"""
+字句解析器(Lexer, Tokenizer)の実装
+"""
+
 from dataclasses import dataclass, field
+from typing import ClassVar
 
 from ponkey.token import Token, TokenType
 
@@ -19,24 +24,18 @@ class Tokenizer:
     input: str
     position: int = 0
     read_position: int = 0
-    ch: str = field(init=False)
+    ch: str | None = field(init=False)
+
+    WHITESPACES: ClassVar[list[str]] = [" ", "\t", "\n", "\r"]
 
     def __post_init__(self) -> None:
         self.read_char()
 
-    @staticmethod
-    def _is_letter(ch: str) -> bool:
-        """文字が英字かアンダースコアかどうかを判定する
-
-        Args:
-            ch (str): 判定したい文字
-        """
-        return ("a" <= ch <= "z") | ("A" <= ch <= "Z") | (ch == "_")
-
-    @staticmethod
-    def _is_number(ch: str) -> bool:
-        """chが数字かどうかを判定する"""
-        return "0" <= ch <= "9"
+    def peek_char(self) -> str | None:
+        if self.read_position >= len(self.input):
+            return None
+        else:
+            return self.input[self.read_position]
 
     def read_char(self) -> None:
         """
@@ -48,20 +47,11 @@ class Tokenizer:
             None
         """
         if self.read_position >= len(self.input):
-            self.ch = ""
+            self.ch = None
         else:
             self.ch = self.input[self.read_position]
         self.position = self.read_position
         self.read_position = self.position + 1
-
-    @property
-    def WHITESPACES(self) -> list[str]:
-        return [" ", "\t", "\n", "\r"]
-
-    def _skip_whitespace(self) -> None:
-        """Tokenizer.WHITESPACESに定義された空文字をスキップする"""
-        while self.ch in self.WHITESPACES:
-            self.read_char()
 
     def read_number(self) -> str:
         """Read until the next non-number character"""
@@ -93,7 +83,7 @@ class Tokenizer:
         match self.ch:
             case "=":
                 # 次の文字をpeekして、== か = かを判定する
-                if self.peak_char() == "=":
+                if self.peek_char() == "=":
                     # 次の文字が = の場合、== としてトークンを生成する
                     ch: str = self.ch
                     # 次の文字に進める
@@ -109,7 +99,7 @@ class Tokenizer:
                 tok = Token(TokenType.MINUS, "-")
             case "!":
                 # 次の文字をpeekして、!= か ! かを判定する
-                if self.peak_char() == "=":
+                if self.peek_char() == "=":
                     # 次の文字が = の場合、!= としてトークンを生成する
                     ch: str = self.ch  # type: ignore[no-redef]
                     self.read_char()
@@ -137,7 +127,7 @@ class Tokenizer:
                 tok = Token(TokenType.COMMA, ",")
             case ";":
                 tok = Token(TokenType.SEMICOLON, ";")
-            case "":
+            case None:
                 tok = Token(TokenType.EOF, "")
             # 現在の文字が英字の場合、識別子を読み取り、その識別子に対応するトークンを返す
             case _:
@@ -159,8 +149,25 @@ class Tokenizer:
         self.read_char()
         return tok
 
-    def peak_char(self) -> str:
-        if self.read_position >= len(self.input):
-            return ""
-        else:
-            return self.input[self.read_position]
+    @staticmethod
+    def _is_letter(ch: str | None) -> bool:
+        """文字が英字かアンダースコアかどうかを判定する
+
+        Args:
+            ch (str): 判定したい文字
+        """
+        if ch is None:
+            raise ValueError("ch is None")
+        return ("a" <= ch <= "z") | ("A" <= ch <= "Z") | (ch == "_")
+
+    @staticmethod
+    def _is_number(ch: str | None) -> bool:
+        if ch is None:
+            raise ValueError("ch is None")
+        """chが数字かどうかを判定する"""
+        return "0" <= ch <= "9"
+
+    def _skip_whitespace(self) -> None:
+        """Tokenizer.WHITESPACESに定義された空文字をスキップする"""
+        while self.ch in self.WHITESPACES:
+            self.read_char()
