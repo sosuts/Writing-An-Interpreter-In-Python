@@ -91,6 +91,8 @@ class TestIdentifierExpression:
         assert len(program.statements) == 1
         assert program.statements[0].token_literal() == expected_value
 
+
+class TestIntegerLiteralExpression:
     def test_integer_literal_expression(self) -> None:
         input_ = "5;"
         expected_value = 5
