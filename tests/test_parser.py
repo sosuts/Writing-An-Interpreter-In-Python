@@ -1,6 +1,6 @@
 from pytest import CaptureFixture
 
-from ponkey.ast import Expression, ExpressionStatement, LetStatement, Statement
+from ponkey.ast import Expression, ExpressionStatement, LetStatement, PrefixExpression
 from ponkey.parser import Parser
 from ponkey.token import TokenType
 from ponkey.tokenizer import Tokenizer
@@ -47,9 +47,10 @@ class TestLetStatements:
         let 838838;
         """
         expected_error_messages = (
-            "parser has 3 errors\n"
+            "parser has 4 errors\n"
             "parser error: expected next token to be =, got INT instead\n"
             "parser error: expected next token to be IDENT, got = instead\n"
+            "parser error: no prefix parse function for = found\n"
             "parser error: expected next token to be IDENT, got INT instead\n"
         )
 
@@ -58,6 +59,10 @@ class TestLetStatements:
         parser.parse_program()
         check_parser_errors(parser)
         captured = capsys.readouterr()
+        from pprint import pprint
+
+        pprint(captured.out)
+        pprint(len(parser.errors))
         assert captured.out == expected_error_messages
 
 
@@ -106,3 +111,29 @@ class TestIntegerLiteralExpression:
         assert isinstance(program.statements[0].expression, Expression)
         assert program.statements[0].token_literal() == str(expected_value)
         assert program.statements[0].expression.value == 5
+
+
+class TestParsingPrefixExpressions:
+    def test_simple_cases(self) -> None:
+        expected_operators = ["!", "-"]
+        expected_integer_values = [5, 11]
+        inputs: list[dict[str, str | int]] = [
+            {"input": "!5;", "operator": "!", "integer_value": 5},
+            {"input": "-11;", "operator": "-", "integer_value": 11},
+        ]
+        for i, operator, value in zip(
+            inputs, expected_operators, expected_integer_values
+        ):
+            tokenizer = Tokenizer(i["input"])
+            parser = Parser(tokenizer)
+            program = parser.parse_program()
+            check_parser_errors(parser)
+            assert len(program.statements) == 1
+
+            stmt = program.statements[0]
+            assert isinstance(stmt, ExpressionStatement)
+            assert isinstance(stmt.expression, PrefixExpression)
+            assert isinstance(stmt.expression, Expression)
+            assert i["operator"] == operator
+            assert i["integer_value"] == value
+            # TODO: 2025/1/20 ast.PrefixExpressionは未定義

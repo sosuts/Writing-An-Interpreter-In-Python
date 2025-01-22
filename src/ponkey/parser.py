@@ -7,6 +7,7 @@ from ponkey.ast import (
     Identifier,
     IntegerLiteral,
     LetStatement,
+    PrefixExpression,
     Program,
     ReturnStatement,
     Statement,
@@ -56,6 +57,9 @@ class Parser:
         self.infix_parse_functions: dict[TokenType, InfixParseFn] = {}
         self.register_prefix(TokenType.IDENT, self.parse_identifier)
         self.register_prefix(TokenType.INT, self.parse_integer_literal)
+        self.register_prefix(TokenType.BANG, self.parse_prefix_expression)
+        self.register_prefix(TokenType.MINUS, self.parse_prefix_expression)
+
         self._init_tokens()
 
     def next_token(self) -> None:
@@ -150,6 +154,7 @@ class Parser:
             raise ValueError("current_token is None")
         prefix = self.prefix_parse_functions.get(self.current_token.type)
         if prefix is None:
+            self.no_prefix_parser_error(self.current_token.type)
             return None
         left_expression = prefix()
         return left_expression
@@ -239,3 +244,15 @@ class Parser:
 
     def register_infix(self, token_type: TokenType, fn: InfixParseFn) -> None:
         self.infix_parse_functions[token_type] = fn
+
+    def no_prefix_parser_error(self, token_type: TokenType) -> None:
+        self.errors.append(f"no prefix parse function for {token_type} found")
+
+    def parse_prefix_expression(self) -> Expression:
+        expression = PrefixExpression(
+            token=self.current_token, operator=self.current_token.literal
+        )
+        self.next_token()
+        # 本文中のPREFIXはどこで定義されている？
+        expression.right = self.parse_expression(Priority.PREFIX)
+        return expression

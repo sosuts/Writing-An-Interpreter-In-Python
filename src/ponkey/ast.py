@@ -238,3 +238,21 @@ class IntegerLiteral(Expression):
 
     def string(self) -> str:
         return self.token.literal
+
+
+class PrefixExpression(Expression):
+    def __init__(
+        self, token: Token, operator: str, right: Expression | None = None
+    ) -> None:
+        self.token = token
+        self.operator = operator
+        self.right = right
+
+    def expression_node(self) -> None:
+        raise NotImplementedError
+
+    def token_literal(self) -> str:
+        return self.token.literal
+
+    def string(self) -> str:
+        return f"({self.operator}{self.right.string()})"

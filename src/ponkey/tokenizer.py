@@ -134,7 +134,7 @@ class Tokenizer:
                 # 英字の場合、識別子を読み取る
                 if self._is_letter(self.ch):
                     literal = self.read_identifier()
-                    # 識別子に対応するトークンを返す
+                    # 識別子トークンまたは予約語トークンを返す
                     tok = Token(
                         Token.lookup_table(literal),
                         literal,
